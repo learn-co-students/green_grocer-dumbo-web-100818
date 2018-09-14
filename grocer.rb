@@ -1,3 +1,5 @@
+require 'pry'
+
 def consolidate_cart(cart)
 	consolidate = {}
 
@@ -25,6 +27,8 @@ def apply_coupons(cart, coupons)
       else
         cart["#{coupon_item} W/COUPON"] = {price: coupon[:cost], clearance: cart_item[:clearance], count: 1}
       end
+      # binding.pry
+      cart.delete(coupon_item) if cart_item[:count] == 0
     end
   end
   return cart
@@ -40,14 +44,35 @@ def apply_clearance(cart)
 end
 
 def checkout(cart, coupons)
-  consolidate_cart = consolidate_cart(cart)
-  coupon_cart = apply_coupons(consolidate_cart, coupons)
-  clearance_cart = apply_clearance(coupon_cart)
+  consolidated = consolidate_cart(cart)
+  coupons_applied = apply_coupons(consolidated, coupons)
+  # binding.pry
+  clearance_applied = apply_clearance(coupons_applied)
   total = 0
-  clearance_cart.each {|item, info| total += info[:price]}
+  clearance_applied.each {|item, info| total += info[:price]}
+  return total
   if total > 100
     total = (total * 0.9).round(2)
+    return total
   else
     return total
   end
 end
+
+# cart = [
+#   {"AVOCADO" => {:price => 3.00, :clearance => true}},
+#   {"AVOCADO" => {:price => 3.00, :clearance => true}},
+#   {"CHEESE" => {:price => 6.50, :clearance => false}},
+#   {"CHEESE" => {:price => 6.50, :clearance => false}},
+#   {"CHEESE" => {:price => 6.50, :clearance => false}},
+#   {"SOY MILK" => {:price => 4.50, :clearance => true}}
+# ]
+#
+# coupons = [
+#   {:item => "AVOCADO", :num => 2, :cost => 5.00},
+#   {:item => "CHEESE", :num => 3, :cost => 15.00}
+# ]
+
+# consolidated = consolidate_cart(cart)
+# p apply_coupons(consolidated, coupons)
+# checkout(cart, coupons)
