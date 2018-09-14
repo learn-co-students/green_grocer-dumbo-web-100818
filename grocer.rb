@@ -1,9 +1,33 @@
 def consolidate_cart(cart)
-  # code here
+	consolidate = {}
+
+	cart.each do |item|
+		item_name = item.keys().first()
+		if consolidate.has_key?(item_name)
+			consolidate[item_name][:count] += 1
+		else
+			consolidate[item_name] = item[item_name]
+			consolidate[item_name][:count] = 1
+		end
+	end
+
+	return consolidate
 end
 
 def apply_coupons(cart, coupons)
-  # code here
+  coupons.each do |coupon|
+    coupon_item = coupon[:item]
+    if cart.has_key?(coupon_item)
+      cart_item = cart[coupon_item]
+      cart_item[:count] -= coupon[:num]
+      if cart.has_key?("#{coupon_item} W/COUPON")
+        cart["#{coupon_item} W/COUPON"][:count] += 1
+      else
+        cart["#{coupon_item} W/COUPON"] = {price: coupon[:cost], clearance: cart_item[:clearance], count: 1}
+      end
+    end
+  end
+  return cart
 end
 
 def apply_clearance(cart)
