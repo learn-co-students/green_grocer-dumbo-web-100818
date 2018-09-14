@@ -27,8 +27,6 @@ def apply_coupons(cart, coupons)
       else
         cart["#{coupon_item} W/COUPON"] = {price: coupon[:cost], clearance: cart_item[:clearance], count: 1}
       end
-      # binding.pry
-      cart.delete(coupon_item) if cart_item[:count] == 0
     end
   end
   return cart
@@ -46,11 +44,13 @@ end
 def checkout(cart, coupons)
   consolidated = consolidate_cart(cart)
   coupons_applied = apply_coupons(consolidated, coupons)
-  # binding.pry
   clearance_applied = apply_clearance(coupons_applied)
   total = 0
-  clearance_applied.each {|item, info| total += info[:price]}
-  # return total
+
+  clearance_applied.each do |item, info|
+    total += info[:price] * info[:count]
+  end
+
   if total > 100
     total = (total * 0.9).round(2)
     return total
@@ -72,7 +72,9 @@ end
 #   {:item => "AVOCADO", :num => 2, :cost => 5.00},
 #   {:item => "CHEESE", :num => 3, :cost => 15.00}
 # ]
-
-# consolidated = consolidate_cart(cart)
+# beer = {"BEER" => {:price => 13.00, :clearance => false}}
+# cart = Array.new(10, beer)
+# p cart
+# p consolidate_cart(cart)
 # p apply_coupons(consolidated, coupons)
 # checkout(cart, coupons)
