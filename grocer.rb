@@ -40,16 +40,13 @@ def checkout(cart, coupons)
   consolidated = consolidate_cart(cart)
   coupons_applied = apply_coupons(consolidated, coupons)
   clearance_applied = apply_clearance(coupons_applied)
+
   total = 0
+  clearance_applied.each {|item, details| total += details[:price] * details[:count]}
 
-  clearance_applied.each do |item, info|
-    total += info[:price] * info[:count]
-  end
+	total > 100 ? apply_10_percent(total) : total
+end
 
-  if total > 100
-    total = (total * 0.9).round(2)
-    return total
-  else
-    return total
-  end
+def apply_10_percent(total)
+	return total * 0.9.round(2)
 end
