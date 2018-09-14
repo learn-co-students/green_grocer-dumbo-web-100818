@@ -39,7 +39,11 @@ def apply_clearance(cart)
   return cart
 end
 
-# def checkout(cart, coupons)
-#   consolidate = consolidate_cart(cart)
-#   consolidate[:price]
-# end
+def checkout(cart, coupons)
+  consolidate_cart = consolidate_cart(cart)
+  coupon_cart = apply_coupons(consolidate_cart, coupons)
+  clearance_cart = apply_clearance(coupon_cart)
+  total = 0
+  clearance_cart.each {|item, info| total += info[:price]}
+  return total
+end
